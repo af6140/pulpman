@@ -1,0 +1,23 @@
+{
+  "pulp_url": "https://pulp.nonexist/pulp",
+  "rpm_refresh_interval": 60000,
+  "puppet_refresh_interval": 50000,
+  "public": {
+    "rpm_repos": ["ent-cent7-dev", "ent-cent7-qa", "ent-cent7-uat", "ent-centos7"],
+    "rpm_repo_labels": ["7Dev", "7QA", "7UAT", "7Prd"],
+    "puppet_repos": ["forge_build", "forge_dev", "forge_qa", "forge_uat", "forge_prd"],
+    "puppet_repo_labels": ["Build", "Dev", "QA", "UAT", "Prod"]
+  },
+  "admin_user": "admin",
+  "admin_password": "admin",
+  "log_level": "info",
+  "oidc": {
+    "serverUrl": "https://auth.nonexist"
+    "authorizationEndpoint" : "/auth/realms/non_exist/protocol/openid-connect/auth",
+    "tokenEndpoint": "/auth/realms/non_exist/protocol/openid-connect/token",
+    "userinfoEndpoint" : "/auth/realms/non_exist/protocol/openid-connect/userinfo",
+    "loginStyle": "redirect",
+    "clientId": "pulpman",
+    "clientSecret": ""
+  }
+}
