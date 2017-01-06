@@ -7,8 +7,10 @@ import injectTapEventPlugin from 'react-tap-event-plugin';
 // http://stackoverflow.com/a/34015469/988941
 injectTapEventPlugin();
 
-import App from '../imports/ui/App.jsx';
+//import App from '../imports/ui/App.jsx';
+import {renderRoutes} from '../imports/ui/Route.jsx';
 
 Meteor.startup(() => {
-  render(<App />, document.getElementById('render-target'));
+  //render(<App />, document.getElementById('render-target'));
+  render(renderRoutes(), document.getElementById('render-target'));
 });

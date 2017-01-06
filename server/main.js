@@ -2,6 +2,22 @@
 
 if (Meteor.isServer) {
   Meteor.startup(function () {
+    ServiceConfiguration.configurations.upsert(
+      { service: 'oidc' },
+      {
+        $set: {
+          loginStyle: Meteor.settings.oidc.loginStyle,
+          clientId: Meteor.settings.oidc.clientId,
+          secret: Meteor.settings.oidc.clientSecret,
+          serverUrl: Meteor.settings.oidc.serverUrl,
+          authorizationEndpoint: Meteor.settings.oidc.authorizationEndpoint,
+          tokenEndpoint: Meteor.settings.oidc.tokenEndpoint,
+          userinfoEndpoint: Meteor.settings.oidc.userinfoEndpoint,
+          idTokenWhitelistFields: Meteor.settings.oidc.idTokenWhitelistFields || ['realm_access']
+        }
+      }
+    );
+
     console.log("Pulpman startup ...");
     PulpAuthToken = new Buffer(Meteor.settings.admin_user + ':' + Meteor.settings.admin_password).toString('base64');
     var winston = Winston;
@@ -24,23 +40,26 @@ if (Meteor.isServer) {
     } else {
       logger.remove(winston.transports.File);
     }
+
   });
 }
 
-ServiceConfiguration.configurations.upsert(
-  { service: 'oidc' },
-  {
-    $set: {
-      loginStyle: Meteor.settings.oidc.loginStyle,
-      clientId: Meteor.settings.oidc.clientId,
-      secret: Meteor.settings.oidc.clientSecret,
-      serverUrl: Meteor.settings.oidc.serverUrl,
-      authorizationEndpoint: Meteor.settings.oidc.authorizationEndpoint,
-      tokenEndpoint: Meteor.settings.oidc.tokenEndpoint,
-      userinfoEndpoint: Meteor.settings.oidc.userinfoEndpoint
+
+
+if(Meteor.isServer) {
+  Meteor.publish("userData", function () {
+    console.log("publish user data: ", this.userId)
+    if (this.userId) {
+      return Meteor.users.find({_id: this.userId},
+        {fields: {'services': 1}});
+    }else {
+      this.ready()
     }
-  }
-);
+  });
+}
+
 import '../imports/api/util.js';
 import '../imports/api/modules.js';
 import '../imports/api/rpms.js';
+
+

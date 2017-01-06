@@ -4,6 +4,7 @@ import ReactDOM from 'react-dom';
 import {Meteor} from 'meteor/meteor';
 import {createContainer} from 'meteor/react-meteor-data';
 import {Session} from 'meteor/session';
+import { ReactiveVar } from 'meteor/reactive-var'
 
 import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
 import AppBar from 'material-ui/AppBar';
@@ -18,6 +19,7 @@ import {Tracker} from 'meteor/tracker';
 import FlatButton from 'material-ui/FlatButton';
 import CircularProgress from 'material-ui/CircularProgress';
 
+import { browserHistory } from 'react-router'
 
 import {PuppetModules} from '../api/modules.js'
 //PuppetModules = new Mongo.Collection('modules');
@@ -80,13 +82,23 @@ class App extends Component {
   }
 
   componentDidMount() {
-    if (Meteor.user())
+    console.log("App did mount:" +JSON.stringify(this.props));
+    if (Meteor.user()) {
       this.showNotification("Finished loading!");
+    }
+    else {
+      console.log("No user available");
+    }
   }
 
   componentDidUpdate() {
-    if (Meteor.user())
-      this.showNotification("Finished loading!");
+    // if (Meteor.user())
+    //   this.showNotification("Finished loading!");
+
+  }
+  componentWillMount() {
+    // if (Meteor.user())
+    //   this.showNotification("Finished loading!");
   }
 
   showCopyUnitDialog(action_data) {
@@ -114,38 +126,45 @@ class App extends Component {
     });
   }
 
+
   renderApp() {
-    if (Meteor.user()) {
-      console.log("User logged in");
+    console.log("render app");
+
+    if(true) {
       return (
         <div className="container">
-            <AppBar title="Pulp Man" iconElementLeft={< IconButton tooltip="Home"> <ActionHome/> </IconButton>}
-                    iconElementRight={<FlatButton label="Log out " onClick={this.handleLogout.bind(this)}/>}/>
-            <Paper zDepth={2}>
-                <form className="query_form" onSubmit={this.handleSubmit.bind(this)} style={{
-                  margin: "0 10px"
-                }}>
-                    <UnitTypeSelect id="unitTypeInput" ref="unitTypeInput"/>
-                    <TextField id="queryInput" hintText="Unit Name" ref="queryInput"/>
-                </form>
-            </Paper>
-            <div>
-                <br/> {this.renderUnits()}
-            </div>
-            <CopyUnitDialog ref="copyUnitDialog" open={this.state.show_copy_unit_dialog}
-                            errorHandler={this.showNotification.bind(this)}/>
-            <AppNotification ref="appNotification"/>
+          <AppBar title="Pulp Man" iconElementLeft={< IconButton tooltip="Home"> <ActionHome/> </IconButton>}
+                  iconElementRight={<FlatButton label="Log out " onClick={this.handleLogout.bind(this)}/>}/>
+          <Paper zDepth={2}>
+            <form className="query_form" onSubmit={this.handleSubmit.bind(this)} style={{
+              margin: "0 10px"
+            }}>
+              <UnitTypeSelect id="unitTypeInput" ref="unitTypeInput"/>
+              <TextField id="queryInput" hintText="Unit Name" ref="queryInput"/>
+            </form>
+          </Paper>
+          <div>
+            <br/> {this.renderUnits()}
+          </div>
+          <CopyUnitDialog ref="copyUnitDialog" open={this.state.show_copy_unit_dialog}
+                          errorHandler={this.showNotification.bind(this)}/>
+          <AppNotification ref="appNotification"/>
 
         </div>
       );
-    } else {
-      this.doLogin()
-      if (Meteor.loggingIn()) {
-        console.log("Logging in progress");
-        return (<div>Login in progress <CircularProgress /></div>)
-      } else {
-        return null;
-      }
+    }else {
+      return (
+      <div className="container">
+        <AppBar title="Pulp Man" iconElementLeft={< IconButton tooltip="Home"> <ActionHome/> </IconButton>}
+                iconElementRight={<FlatButton label="Log out " onClick={this.handleLogout.bind(this)}/>}/>
+        <div>
+          Not authorized
+        </div>
+
+        <AppNotification ref="appNotification"/>
+
+      </div>
+      );
     }
   }
 
@@ -170,12 +189,18 @@ class App extends Component {
     //ReactDOM.findDOMNode(this.refs.queryInput).value = '';
   }
 
-  handleLogout(event) {
+  handleLogoutOrig(event) {
     if (Meteor.user()) {
       console.log("Logging out current user");
       Meteor.logout();
     }
     event.preventDefault();
+  }
+
+  handleLogout(e) {
+    e.preventDefault();
+    Meteor.logout();
+    browserHistory.push('/login');
   }
 }
 
@@ -184,14 +209,14 @@ App.propTypes = {
   rpms: PropTypes.array.isRequired
 };
 
-export default createContainer(() => {
+export default AppContainer = createContainer(() => {
   Meteor.subscribe('modules', {
     refresh_publication: Session.get('refresh_modules_publication')
-  }, {
-    onStop: function (e) {
-      console.log(e.message);
-    }
   });
   Meteor.subscribe('rpms', {refresh_publication: Session.get('refresh_rpm_publication')});
-  return {modules: PuppetModules.find({}).fetch(), rpms: RPMs.find({}).fetch()};
+  Meteor.subscribe("userData");
+  return {
+    modules: PuppetModules.find({}).fetch(),
+    rpms: RPMs.find({}).fetch(),
+  };
 }, App);

@@ -30,3 +30,4 @@ infinitedg:winston
 switch:accounts-oidc
 service-configuration
 check
+accounts-ui
