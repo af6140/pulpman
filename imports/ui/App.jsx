@@ -46,7 +46,10 @@ class App extends Component {
   renderPuppetModules() {
     let filteredModules = this.props.modules;
     let labels = Meteor.settings.public.puppet_repo_labels;
-    console.log("***** props.modules: "+JSON.stringify(filteredModules));
+    let log_level = Meteor.settings.log_level;
+    if ('debug' === log_level) {
+      console.log("***** props.modules: " + JSON.stringify(filteredModules));
+    }
     console.log("Render modules with state: ", this.state.query_text);
     if (this.state.query_text) {
       filteredModules = filteredModules.filter(module => module.name.match(this.state.query_text));
@@ -59,8 +62,11 @@ class App extends Component {
   renderRPMS() {
     let filteredRPMs = this.props.rpms;
     let labels = Meteor.settings.public.rpm_repo_labels;
+    let log_level = Meteor.settings.log_level;
+    if ('debug' === log_level) {
+      console.log("*** render rpms", JSON.stringify(this.props.rpms));
+    }
     console.log("Render rpm with state: ", this.state.query_text);
-    console.log("*** render rpms", JSON.stringify(this.props.rpms));
     if (this.state.query_text) {
       filteredRPMs = filteredRPMs.filter(rpm => rpm.name.match(this.state.query_text));
     }

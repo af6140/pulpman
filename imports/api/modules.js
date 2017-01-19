@@ -50,7 +50,7 @@ if (Meteor.isServer) {
       "auth":  Meteor.settings.admin_user + ':' + Meteor.settings.admin_password,
       "entity": JSON.stringify(query_body)
     };
-    logger.debug("httpobj: " + JSON.stringify(httpojb));
+    logger.debug("httpobj: " + JSON.stringify(httpobj));
     Meteor.setInterval(function query_modules_data() {
       var raw_data = {};
       process.env.NODE_TLS_REJECT_UNAUTHORIZED = "0";
