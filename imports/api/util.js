@@ -45,7 +45,6 @@ if (Meteor.isServer) {
           "content": httpobj["entity"],
           "auth": httpobj["auth"],
           "followRedirects": true,
-          "timeout": 30000
         });
         //response code 202
         logger.debug("copy unit response: " + JSON.stringify(response));
@@ -78,8 +77,7 @@ if (Meteor.isServer) {
         var response = HTTP.del(httpobj["path"], {
           "headers": httpobj["headers"],
           "auth": httpobj["auth"],
-          "followRedirects": true,
-          "timeout": 30000
+          "followRedirects": true
         });
         //response code 202
         logger.info("purge unit response: " + JSON.stringify(response));
@@ -126,7 +124,6 @@ if (Meteor.isServer) {
           "content": httpobj["entity"],
           "auth": httpobj["auth"],
           "followRedirects": true,
-          "timeout": 30000
         });
         //response code 202
         if (response.statusCode === 202) {
@@ -229,7 +226,6 @@ if (Meteor.isServer) {
             "content": httpobj["entity"],
             "auth": httpobj["auth"],
             "followRedirects": true,
-            "timeout": 30000
           });
           //response code 202
           if (response.statusCode === 202) {
