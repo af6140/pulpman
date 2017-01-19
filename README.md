@@ -10,4 +10,12 @@ It comes with authentication and authorization support through OpenID client int
 
 On how to build and deploy the application, please refer meteor official documentation.
 
+
+Some screenshots:
+
+![Puppet modules](https://github.com/af6140/pulpman/blob/master/public/images/puppet_view.png "Puppet modules view")
+
+![RPMs](https://github.com/af6140/pulpman/blob/master/public/images/rpm_view.png "RPMs view")
+
+
 Enjoy!
