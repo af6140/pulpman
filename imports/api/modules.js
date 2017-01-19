@@ -41,16 +41,16 @@ if (Meteor.isServer) {
     var init = true;
     var self = this;
     logger.info("Publish modules with params: ", params);
-    logger.info("PulpAuthToken: ", PulpAuthToken);
     var httpobj = {
       "method": "POST",
       "path": Meteor.settings.pulp_url + '/api/v2/content/units/puppet_module/search/',
       "headers": {
         "Content-Type": "application/json",
-        "Authorization": "Basic " + PulpAuthToken
       },
+      "auth":  Meteor.settings.admin_user + ':' + Meteor.settings.admin_password,
       "entity": JSON.stringify(query_body)
     };
+    logger.debug("httpobj: " + JSON.stringify(httpojb));
     Meteor.setInterval(function query_modules_data() {
       var raw_data = {};
       process.env.NODE_TLS_REJECT_UNAUTHORIZED = "0";
@@ -59,11 +59,12 @@ if (Meteor.isServer) {
         var response = HTTP.post(httpobj["path"], {
           "headers": httpobj["headers"],
           "content": httpobj["entity"],
+          "auth": httpobj["auth"],
           "followRedirects": true,
-          "timeout": 5000
         });
         logger.info("Finished pulp api call");
         var response_json = JSON.parse(response["content"]);
+        logger.debug("Search modules response json: "+response["content"]);
         _.each(response_json, function (module_data) {
           var name = module_data['author'].concat('-').concat(module_data['name']);
           //console.log("####module key:"+module_key)

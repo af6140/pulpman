@@ -141,8 +141,8 @@ if (Meteor.isServer) {
           "path": Meteor.settings.pulp_url + '/api/v2/repositories/' + repo + '/search/units/',
           "headers": {
             "Content-Type": "application/json",
-            "Authorization": "Basic " + PulpAuthToken
           },
+          "auth":  Meteor.settings.admin_user + ':' + Meteor.settings.admin_password,
           "entity": JSON.stringify(query_body)
         };
         logger.info("Query repo:", repo);
@@ -151,8 +151,8 @@ if (Meteor.isServer) {
           var response = HTTP.post(httpobj["path"], {
             "headers": httpobj["headers"],
             "content": httpobj["entity"],
+            "auth": httpobj["auth"],
             "followRedirects": true,
-            "timeout": 5000
           });
           var response_json = JSON.parse(response["content"]);
           _.each(response_json, function (query_data) {

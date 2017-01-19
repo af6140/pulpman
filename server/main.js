@@ -19,9 +19,9 @@ if (Meteor.isServer) {
     );
 
     console.log("Pulpman startup ...");
-    PulpAuthToken = new Buffer(Meteor.settings.admin_user + ':' + Meteor.settings.admin_password).toString('base64');
+    //PulpAuthToken = new Buffer(Meteor.settings.admin_user + ':' + Meteor.settings.admin_password).toString('base64');
     var winston = Winston;
-    var log_path = Meteor.settings.logpath ? Meteor.settings.logpath : 'pulmpman.log';
+    var log_path = Meteor.settings.logpath ? Meteor.settings.logpath : 'pulpman.log';
     var log_level = Meteor.settings.log_level ? Meteor.settings.log_level: 'info';
     console.log("Log path: " + log_path);
     logger = new(winston.Logger)({

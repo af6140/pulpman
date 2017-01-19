@@ -34,8 +34,8 @@ if (Meteor.isServer) {
         "path": Meteor.settings.pulp_url + '/api/v2/repositories/' + to + '/actions/associate/',
         "headers": {
           "Content-Type": "application/json",
-          "Authorization": "Basic " + PulpAuthToken
         },
+        "auth":  Meteor.settings.admin_user + ':' + Meteor.settings.admin_password,
         "entity": JSON.stringify(query_body)
       };
       process.env.NODE_TLS_REJECT_UNAUTHORIZED = "0";
@@ -43,8 +43,9 @@ if (Meteor.isServer) {
         var response = HTTP.post(httpobj["path"], {
           "headers": httpobj["headers"],
           "content": httpobj["entity"],
+          "auth": httpobj["auth"],
           "followRedirects": true,
-          "timeout": 5000
+          "timeout": 30000
         });
         //response code 202
         logger.debug("copy unit response: " + JSON.stringify(response));
@@ -67,17 +68,18 @@ if (Meteor.isServer) {
         "method": "DELETE",
         "path": Meteor.settings.pulp_url + '/api/v2/content/orphans/' + unit_type + '/' + unit_id + '/',
         "headers": {
-          "Content-Type": "application/json",
-          "Authorization": "Basic YWRtaW46YWRtaW4="
-        }
+          "Content-Type": "application/json"
+        },
+        "auth":  Meteor.settings.admin_user + ':' + Meteor.settings.admin_password,
       };
       process.env.NODE_TLS_REJECT_UNAUTHORIZED = "0";
       try {
         logger.info("delete orphans:", JSON.stringify(httpobj));
         var response = HTTP.del(httpobj["path"], {
           "headers": httpobj["headers"],
+          "auth": httpobj["auth"],
           "followRedirects": true,
-          "timeout": 5000
+          "timeout": 30000
         });
         //response code 202
         logger.info("purge unit response: " + JSON.stringify(response));
@@ -112,9 +114,9 @@ if (Meteor.isServer) {
         "method": "POST",
         "path": Meteor.settings.pulp_url + '/api/v2/repositories/' + from + '/actions/unassociate/',
         "headers": {
-          "Content-Type": "application/json",
-          "Authorization": "Basic " + PulpAuthToken,
+          "Content-Type": "application/json"
         },
+        "auth":  Meteor.settings.admin_user + ':' + Meteor.settings.admin_password,
         "entity": JSON.stringify(query_body)
       };
       process.env.NODE_TLS_REJECT_UNAUTHORIZED = "0";
@@ -122,8 +124,9 @@ if (Meteor.isServer) {
         var response = HTTP.post(httpobj["path"], {
           "headers": httpobj["headers"],
           "content": httpobj["entity"],
+          "auth": httpobj["auth"],
           "followRedirects": true,
-          "timeout": 5000
+          "timeout": 30000
         });
         //response code 202
         if (response.statusCode === 202) {
@@ -212,9 +215,9 @@ if (Meteor.isServer) {
           "method": "POST",
           "path": Meteor.settings.pulp_url + '/api/v2/repositories/' + from + '/actions/unassociate/',
           "headers": {
-            "Content-Type": "application/json",
-            "Authorization": "Basic " + PulpAuthToken
+            "Content-Type": "application/json"
           },
+          "auth":  Meteor.settings.admin_user + ':' + Meteor.settings.admin_password,
           "entity": JSON.stringify(query_body)
         };
         process.env.NODE_TLS_REJECT_UNAUTHORIZED = "0";
@@ -224,8 +227,9 @@ if (Meteor.isServer) {
           var response = HTTP.post(httpobj["path"], {
             "headers": httpobj["headers"],
             "content": httpobj["entity"],
+            "auth": httpobj["auth"],
             "followRedirects": true,
-            "timeout": 5000
+            "timeout": 30000
           });
           //response code 202
           if (response.statusCode === 202) {
