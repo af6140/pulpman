@@ -25,11 +25,14 @@ import {PuppetModules} from '../api/modules.js'
 //PuppetModules = new Mongo.Collection('modules');
 import {RPMs} from '../api/rpms.js'
 //RPMs = new Mongo.Collection('rpms');
+import {Repositories} from '../api/repositories'
+
 import PuppetModule from './PuppetModule.jsx';
 import RPM from './RPM.jsx'
 import UnitTypeSelect from './UnitTypeSelect.jsx'
 import AppNotification from './AppNotification.jsx'
 import CopyUnitDialog from './CopyUnitDialog.jsx'
+import AppToolBar from './AppToolBar'
 
 // App component - represents the whole app
 class App extends Component {
@@ -39,7 +42,7 @@ class App extends Component {
     this.state = {
       query_text: ".*",
       finished_loading: false,
-      copy_unit_data: null
+      copy_unit_data: null,
     };
   }
 
@@ -89,7 +92,7 @@ class App extends Component {
 
   componentDidMount() {
     console.log("App did mount:" +JSON.stringify(this.props));
-    if (Meteor.user()) {
+    if (Meteor.user() || Meteor.settings.public.disable_auth===true) {
       this.showNotification("Finished loading!");
     }
     else {
@@ -98,9 +101,9 @@ class App extends Component {
   }
 
   componentDidUpdate() {
-    // if (Meteor.user())
-    //   this.showNotification("Finished loading!");
-
+    if (Meteor.user() || Meteor.settings.public.disable_auth===true) {
+      this.showNotification("Finished loading!");
+    }
   }
   componentWillMount() {
     // if (Meteor.user())
@@ -110,26 +113,6 @@ class App extends Component {
   showCopyUnitDialog(action_data) {
     console.log("Copy unit dialog data:", action_data);
     this.refs.copyUnitDialog.setState({open: true, data: action_data});
-  }
-
-  doLogin() {
-    Meteor.loginWithOidc({}, function (err) {
-      if (err) {
-        console.log("login error", err)
-        if (err instanceof ServiceConfiguration.ConfigError && err.message.includes("not yet loaded")) {
-          console.log("service not configured");
-          return (<div> Login in progress <CircularProgress /></div>);
-        } else {
-          console.log("cannot authenticate user");
-          throw new Meteor.Error('Cannot authenticat user, check authentication service !');
-          return (<div>Error Login</div>);
-        }
-
-      } else {
-        console.log("logged in successful");
-        return null;
-      }
-    });
   }
 
 
@@ -149,6 +132,7 @@ class App extends Component {
               <TextField id="queryInput" hintText="Unit Name" ref="queryInput"/>
             </form>
           </Paper>
+          <AppToolBar repositories={this.props.repositories} unit_type={this.state.unit_type} errorHandler={this.showNotification.bind(this)} />
           <div>
             <br/> {this.renderUnits()}
           </div>
@@ -195,18 +179,12 @@ class App extends Component {
     //ReactDOM.findDOMNode(this.refs.queryInput).value = '';
   }
 
-  handleLogoutOrig(event) {
-    if (Meteor.user()) {
-      console.log("Logging out current user");
-      Meteor.logout();
-    }
-    event.preventDefault();
-  }
-
   handleLogout(e) {
     e.preventDefault();
-    Meteor.logout();
-    browserHistory.push('/login');
+    if(!Meteor.settings.public.disable_auth) {
+      Meteor.logout();
+      browserHistory.push('/login');
+    }
   }
 }
 
@@ -219,8 +197,10 @@ export default AppContainer = createContainer(() => {
   Meteor.subscribe("userData");
   Meteor.subscribe('modules', {refresh_publication: Session.get('refresh_modules_publication')});
   Meteor.subscribe('rpms', {refresh_publication: Session.get('refresh_rpm_publication')});
+  Meteor.subscribe('repositories');
   return {
     modules: PuppetModules.find({}).fetch(),
     rpms: RPMs.find({}).fetch(),
+    repositories: Repositories.find({}).fetch(),
   };
 }, App);

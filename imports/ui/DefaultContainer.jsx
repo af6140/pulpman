@@ -8,9 +8,13 @@ class DefaultPage extends Component {
   }
 
   componentWillMount(){
-    if (!Meteor.userId()) {
-      console.log("push to login in will mount")
-      browserHistory.push('/login');
+    if (!Meteor.userId() ) {
+      if(Meteor.settings.public.disable_auth===true){
+
+      }else {
+        console.log("push to login in will mount")
+        browserHistory.push('/login');
+      }
     }
   }
 
@@ -21,8 +25,8 @@ class DefaultPage extends Component {
     }
   }
   render(){
-      if(this.props.userReady){
-          var serviceData = Meteor.user().services;
+      if(Meteor.settings.public.disable_auth || this.props.userReady){
+          var serviceData = Meteor.user() ? Meteor.user().services : {};
           var authorized = this.isAuthorized(serviceData);
           if(authorized) {
             return (
@@ -44,17 +48,27 @@ class DefaultPage extends Component {
 
   isAuthorized(services){
     var authorized =false
-    if(services && services.oidc && services.oidc.realm_access) {
-      var roles =services.oidc.realm_access.roles
-      console.log("role: " + roles);
-      authorized=roles.includes('pulp_admin')
+    if(Meteor.settings.public.disable_auth ===true ) {
+      authorized = true
+    }else {
+      if (services && services.oidc && services.oidc.realm_access) {
+        var roles = services.oidc.realm_access.roles
+        console.log("role: " + roles);
+        authorized = roles.includes('pulp_admin')
+      }
     }
     return authorized
   }
 }
 export default DefaultContainer = createContainer(() => {
-  var userSub = Meteor.subscribe("userData");
-  return{
-    userReady: userSub.ready() ? (Meteor.user() ? true: false) : false
+  if(Meteor.settings.public.disable_auth === false ) {
+    var userSub = Meteor.subscribe("userData");
+    return {
+      userReady: userSub.ready() ? (Meteor.user() ? true : false) : false
+    }
+  }else {
+    return {
+      userReady : true
+    }
   }
 }, DefaultPage);

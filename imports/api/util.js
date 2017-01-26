@@ -242,6 +242,43 @@ if (Meteor.isServer) {
       } else {
         throw new Meteor.Error("Query body is null");
       }
-    } // end of method
+    }, // end of method
+    'publish_repo' ({
+      repo_id,
+      distributor_id,
+    }){
+      var query_body= {
+        'id': distributor_id
+      };
+      var httpobj = {
+        "method": "POST",
+        "path": Meteor.settings.pulp_url + '/api/v2/repositories/' + repo_id + '/actions/publish/',
+        "headers": {
+          "Content-Type": "application/json"
+        },
+        "auth":  Meteor.settings.admin_user + ':' + Meteor.settings.admin_password,
+        "entity": JSON.stringify(query_body)
+      };
+
+      process.env.NODE_TLS_REJECT_UNAUTHORIZED = "0";
+      try {
+        var response = HTTP.post(httpobj["path"], {
+          "headers": httpobj["headers"],
+          "content": httpobj["entity"],
+          "auth": httpobj["auth"],
+          "followRedirects": true,
+        });
+        //response code 202
+        if (response.statusCode === 202) {
+          logger.info("Publish repo " + repo_id);
+          return "Published repository " + repo_id;
+        } else {
+          throw new Meteor.Error("Cannot publish " +repo_id + ", error: with status  " + response.statusCode);
+        }
+      } catch (error) {
+        logger.error(error);
+        throw new Meteor.Error("Failed to invoke pulp api: " + error);
+      }
+    }// end of this method
   }); // End of Metehor.methods
 }

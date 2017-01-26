@@ -2,30 +2,32 @@
 
 if (Meteor.isServer) {
   Meteor.startup(function () {
-    ServiceConfiguration.configurations.upsert(
-      { service: 'oidc' },
-      {
-        $set: {
-          loginStyle: Meteor.settings.oidc.loginStyle,
-          clientId: Meteor.settings.oidc.clientId,
-          secret: Meteor.settings.oidc.clientSecret,
-          serverUrl: Meteor.settings.oidc.serverUrl,
-          authorizationEndpoint: Meteor.settings.oidc.authorizationEndpoint,
-          tokenEndpoint: Meteor.settings.oidc.tokenEndpoint,
-          userinfoEndpoint: Meteor.settings.oidc.userinfoEndpoint,
-          idTokenWhitelistFields: Meteor.settings.oidc.idTokenWhitelistFields || ['realm_access']
+    if(Meteor.settings.public.disable_auth!==true) {
+      ServiceConfiguration.configurations.upsert(
+        {service: 'oidc'},
+        {
+          $set: {
+            loginStyle: Meteor.settings.oidc.loginStyle,
+            clientId: Meteor.settings.oidc.clientId,
+            secret: Meteor.settings.oidc.clientSecret,
+            serverUrl: Meteor.settings.oidc.serverUrl,
+            authorizationEndpoint: Meteor.settings.oidc.authorizationEndpoint,
+            tokenEndpoint: Meteor.settings.oidc.tokenEndpoint,
+            userinfoEndpoint: Meteor.settings.oidc.userinfoEndpoint,
+            idTokenWhitelistFields: Meteor.settings.oidc.idTokenWhitelistFields || ['realm_access']
+          }
         }
-      }
-    );
+      );
+    }
 
     console.log("Pulpman startup ...");
     //PulpAuthToken = new Buffer(Meteor.settings.admin_user + ':' + Meteor.settings.admin_password).toString('base64');
     var winston = Winston;
     var log_path = Meteor.settings.logpath ? Meteor.settings.logpath : 'pulpman.log';
     var log_level = Meteor.settings.log_level ? Meteor.settings.log_level: 'info';
+    console.log("Setting logleve to " + log_level);
     console.log("Log path: " + log_path);
     logger = new(winston.Logger)({
-      level: log_level,
       transports: [
         new(winston.transports.Console)(),
         new(winston.transports.File)({
@@ -35,6 +37,7 @@ if (Meteor.isServer) {
         })
       ]
     });
+    logger.level = log_level;
     if (Meteor.isProduction) {
       logger.remove(winston.transports.Console);
     } else {
@@ -61,5 +64,6 @@ if(Meteor.isServer) {
 import '../imports/api/util.js';
 import '../imports/api/modules.js';
 import '../imports/api/rpms.js';
+import '../imports/api/repositories';
 
 
