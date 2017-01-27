@@ -40,13 +40,16 @@ class App extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      query_text: ".*",
+      query_text: null,
       finished_loading: false,
       copy_unit_data: null,
     };
   }
 
   renderPuppetModules() {
+    if (this.state.query_text===null) {
+      return null;
+    }
     let filteredModules = this.props.modules;
     let labels = Meteor.settings.public.puppet_repo_labels;
     let log_level = Meteor.settings.log_level;
@@ -63,6 +66,9 @@ class App extends Component {
   }
 
   renderRPMS() {
+    if (this.state.query_text===null) {
+      return null;
+    }
     let filteredRPMs = this.props.rpms;
     let labels = Meteor.settings.public.rpm_repo_labels;
     let log_level = Meteor.settings.log_level;
@@ -115,6 +121,13 @@ class App extends Component {
     this.refs.copyUnitDialog.setState({open: true, data: action_data});
   }
 
+  handleFormUnitTypeChange(unit_type) {
+    this.setState({
+      unit_type: unit_type,
+      query_text :null
+    });
+  }
+
 
   renderApp() {
     console.log("render app");
@@ -128,11 +141,11 @@ class App extends Component {
             <form className="query_form" onSubmit={this.handleSubmit.bind(this)} style={{
               margin: "0 10px"
             }}>
-              <UnitTypeSelect id="unitTypeInput" ref="unitTypeInput"/>
+              <UnitTypeSelect id="unitTypeInput" ref="unitTypeInput" changeListener={this.handleFormUnitTypeChange.bind(this)} />
               <TextField id="queryInput" hintText="Unit Name" ref="queryInput"/>
             </form>
           </Paper>
-          <AppToolBar repositories={this.props.repositories} unit_type={this.state.unit_type} errorHandler={this.showNotification.bind(this)} />
+          <AppToolBar ref="appToolBar" repositories={this.props.repositories} unit_type={this.state.unit_type} errorHandler={this.showNotification.bind(this)} />
           <div>
             <br/> {this.renderUnits()}
           </div>

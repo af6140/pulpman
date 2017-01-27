@@ -4,6 +4,7 @@
   "puppet_refresh_interval": 50000,
   "repo_refresh_interval": 600000,
   "public": {
+    "pulp_rpm_repo_path": "https://pulp.nonexist/pulp/repos",
     "rpm_repos": ["ent-cent7-dev", "ent-cent7-qa", "ent-cent7-uat", "ent-centos7"],
     "rpm_repo_labels": ["7Dev", "7QA", "7UAT", "7Prd"],
     "puppet_repos": ["forge_build", "forge_dev", "forge_qa", "forge_uat", "forge_prd"],

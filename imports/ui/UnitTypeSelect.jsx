@@ -1,4 +1,4 @@
-import React, {Component} from 'react';
+import React, {Component, PropTypes} from 'react';
 import SelectField from 'material-ui/SelectField';
 import MenuItem from 'material-ui/MenuItem';
 
@@ -15,6 +15,7 @@ export default class UnitTypeSelect extends Component {
 
   handleChange (event, index, value) {
     this.setState({value});
+    this.props.changeListener(value);
   }
   render() {
     return (
@@ -24,4 +25,7 @@ export default class UnitTypeSelect extends Component {
       </SelectField>
     );
   }
+}
+UnitTypeSelect.propTypes = {
+  changeListener: PropTypes.func.isRequired,
 }

@@ -1,6 +1,8 @@
 import React, {Component, PropTypes} from 'react';
 import Chip from 'material-ui/Chip';
 import Avatar from 'material-ui/Avatar';
+import EditorPublish from 'material-ui/svg-icons/editor/publish';
+import ContentLink from 'material-ui/svg-icons/content/link';
 
 const styles = {
   chip: {
@@ -19,6 +21,11 @@ export default class PublishRepoChip extends Component {
   showNotpublish() {
     this.props.errorHandler('Repository is set to auto publish!')
   }
+  goToRepo() {
+    var url = Meteor.settings.public.pulp_rpm_repo_path+'/'+this.props.repo.relative_url;
+    console.log('got to repository at url : ' + url);
+    window.open(url, this.props.repo.repo_id);
+  }
   render() {
     var repo = this.props.repo;
     var repo_id = repo.repo_id;
@@ -27,17 +34,18 @@ export default class PublishRepoChip extends Component {
     var defined_labels = unit_type === 'puppet_module' ? Meteor.settings.public['puppet_repo_labels'] : Meteor.settings.public['rpm_repo_labels'];
     var index = defined_repos.indexOf(repo_id);
     var label = 'NA'
-    var avartar_text = unit_type === 'puppet_module' ? 'P' : 'R';
+    console.log("Force publish : " + this.props.forcePublish)
+    var publish_enabled = this.props.forcePublish ? true : (repo.auto_publish ? false: true)
     if(index>=0) {
       label = defined_labels[index];
     }
     return (
       <Chip
-        onTouchTap={repo.auto_publish? this.showNotpublish.bind(this): this.handleTouchTap}
         style={styles.chip}
       >
-        <Avatar size={32}>{avartar_text}</Avatar>
-        {label}
+        <Avatar icon={<EditorPublish />} onTouchTap={!publish_enabled ? this.showNotpublish.bind(this): this.handleTouchTap.bind(this)} />
+        {label} @ {new Date(repo.last_publish).toLocaleString()}
+        {unit_type=== 'rpm' && <ContentLink onTouchTap={this.goToRepo.bind(this)}/>}
       </Chip>
     );
   }
@@ -46,4 +54,5 @@ export default class PublishRepoChip extends Component {
 PublishRepoChip.propTypes = {
   repo: PropTypes.object.isRequired,
   errorHandler: PropTypes.func.isRequired,
+  forcePublish: PropTypes.bool.isRequired,
 }

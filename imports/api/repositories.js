@@ -64,7 +64,7 @@ if (Meteor.isServer) {
               var auto_publish = distributor['auto_publish']
               var last_publish = distributor['last_publish']
               if (distributor_id === 'yum_distributor' || distributor_id === 'puppet_distributor') {
-                var relative_url = distributor['relative_url']
+                var relative_url = distributor['config']['relative_url']
                 var unit_type = distributor_id === "puppet_distributor" ? "puppet_module" : "rpm"
                 var exposed_data = {
                   'repo_id': repo_id,
@@ -82,7 +82,6 @@ if (Meteor.isServer) {
         logger.debug('raw_data:', JSON.stringify(raw_data,null, 2));
 
         _.each(raw_data, function(repo){
-          //console.log(module_key);
           if (init) {
             self.added('repositories', repo['repo_id'], repo);
           } else {
