@@ -2,7 +2,7 @@
   "pulp_url": "https://pulp.nonexist/pulp",
   "rpm_refresh_interval": 60000,
   "puppet_refresh_interval": 50000,
-  "repo_refresh_interval": 600000,
+  "repo_refresh_interval": 30000,
   "public": {
     "pulp_rpm_repo_path": "https://pulp.nonexist/pulp/repos",
     "rpm_repos": ["ent-cent7-dev", "ent-cent7-qa", "ent-cent7-uat", "ent-centos7"],

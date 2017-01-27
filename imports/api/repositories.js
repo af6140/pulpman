@@ -24,7 +24,7 @@ if (Meteor.isServer) {
     details: true
   };
 
-  var refresh_interval = Meteor.settings.repo_refresh_interval ? Meteor.settings.repo_refresh_interval : 600000;
+  var refresh_interval = Meteor.settings.repo_refresh_interval ? Meteor.settings.repo_refresh_interval : 30000;
 
   Meteor.publish('repositories', function (params) {
     var init = true;

@@ -17,6 +17,18 @@ export default class PublishRepoChip extends Component {
 
   handleTouchTap(){
     console.log('publish to be called')
+    var distributor_id = this.props.repo.unit_type === 'puppet_module' ? 'puppet_distributor' : 'yum_distributor';
+    var repo_id = this.props.repo.repo_id;
+    Meteor.call('publish_repo', {
+      repo_id: repo_id,
+      distributor_id: distributor_id,
+    }, (err, res) => {
+      if (err) {
+        this.props.errorHandler('Failed to publish repo: ' + err.message);
+      } else {
+        this.props.errorHandler('Publish request submitted!');
+      }
+    });
   }
   showNotpublish() {
     this.props.errorHandler('Repository is set to auto publish!')
