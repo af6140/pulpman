@@ -28,7 +28,7 @@ if (Meteor.isServer) {
     var log_level = Meteor.settings.log_level ? Meteor.settings.log_level: 'info';
     console.log("Setting logleve to " + log_level);
 
-    if(!path.isAbsolutePath(log_path)) {
+    if(!path.isAbsolute(log_path)) {
       //https://github.com/winstonjs/winston/issues/90
       //use absolute path for log_path
       log_path = path.join(path.resolve('./') , log_path);
