@@ -31,7 +31,7 @@ export default class PublishRepoChip extends Component {
     });
   }
   showNotpublish() {
-    this.props.errorHandler('Repository is set to auto publish!')
+    this.props.errorHandler("Repository is set to auto publish, turn on 'Force Publish' to publish manually!")
   }
   goToRepo() {
     var url = Meteor.settings.public.pulp_rpm_repo_path+'/'+this.props.repo.relative_url;

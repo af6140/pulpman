@@ -1,4 +1,5 @@
 /*global PulpAuthToken:true Buffer:ture logger*/
+var path = require('path')
 
 if (Meteor.isServer) {
   Meteor.startup(function () {
@@ -26,6 +27,12 @@ if (Meteor.isServer) {
     var log_path = Meteor.settings.logpath ? Meteor.settings.logpath : 'pulpman.log';
     var log_level = Meteor.settings.log_level ? Meteor.settings.log_level: 'info';
     console.log("Setting logleve to " + log_level);
+
+    if(!path.isAbsolutPath(log_path)) {
+      //https://github.com/winstonjs/winston/issues/90
+      //use absolute path for log_path
+      log_path = path.join(path.resolve('./') , log_path);
+    }
     console.log("Log path: " + log_path);
     logger = new(winston.Logger)({
       transports: [
@@ -33,7 +40,7 @@ if (Meteor.isServer) {
         new(winston.transports.File)({
           filename: log_path,
           maxFiles: 5,
-          maxSize: 1024
+          maxSize: 1024000
         })
       ]
     });
