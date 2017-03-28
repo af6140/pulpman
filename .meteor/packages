@@ -26,7 +26,6 @@ http
 react
 cosmos:browserify
 session
-infinitedg:winston
 switch:accounts-oidc
 switch:oidc
 service-configuration

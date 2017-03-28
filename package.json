@@ -18,6 +18,7 @@
     "react-dom": "^15.3.2",
     "react-router": "^3.0.0",
     "react-tap-event-plugin": "^2.0.1",
-    "semver": "https://registry.npmjs.org/semver/-/semver-5.3.0.tgz"
+    "semver": "https://registry.npmjs.org/semver/-/semver-5.3.0.tgz",
+    "winston-logrotate": "^1.0.1"
   }
 }

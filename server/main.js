@@ -23,7 +23,8 @@ if (Meteor.isServer) {
 
     console.log("Pulpman startup ...");
     //PulpAuthToken = new Buffer(Meteor.settings.admin_user + ':' + Meteor.settings.admin_password).toString('base64');
-    var winston = Winston;
+    var winston = require('winston');
+    var Rotate = require('winston-logrotate').Rotate
     var log_path = Meteor.settings.logpath ? Meteor.settings.logpath : 'pulpman.log';
     var log_level = Meteor.settings.log_level ? Meteor.settings.log_level: 'info';
     console.log("Setting logleve to " + log_level);
@@ -37,10 +38,14 @@ if (Meteor.isServer) {
     logger = new(winston.Logger)({
       transports: [
         new(winston.transports.Console)(),
-        new(winston.transports.File)({
-          filename: log_path,
-          maxFiles: 5,
-          maxSize: 1024000
+        new Rotate({
+          file: log_path,
+          colorize: false,
+          timestamp: true,
+          keep: 5,
+          json: true,
+          max: '1m',
+          compress: true
         })
       ]
     });
@@ -48,7 +53,7 @@ if (Meteor.isServer) {
     if (Meteor.isProduction) {
       logger.remove(winston.transports.Console);
     } else {
-      logger.remove(winston.transports.File);
+      logger.remove(Rotate);
     }
 
   });
