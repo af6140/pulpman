@@ -44,7 +44,7 @@ if (Meteor.isServer) {
           timestamp: true,
           keep: 5,
           json: true,
-          max: '1m',
+          size: '1m',
           compress: true
         })
       ]
